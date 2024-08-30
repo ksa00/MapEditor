@@ -7,6 +7,8 @@
 #include"Camera.h"
 #include"Fbx.h"
 #include"Stage.h"
+#include"Input.h"
+
 //リンカ
 #pragma comment(lib, "d3d11.lib")
 Stage* pStage;
@@ -62,6 +64,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
  //ウィンドウを表示
  ShowWindow(hWnd, nCmdShow);
 
+ //DirectInputの初期化
+ Input::Initialize(hWnd);
+
 
  //Direct3D初期化
  HRESULT hr= Direct3D::Initialize(winW, winH, hWnd);
@@ -101,6 +106,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
          Camera::Update();
          pStage->Update();
          //ゲームの処理
+         //入力の処理
+         Input::Update();
          Direct3D::BeginDraw();
          pStage->Draw();
         
@@ -121,7 +128,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
  //解放処理
  pStage->Release();
  SAFE_DELETE(pStage);
-
+ Input::Release();
 
  Direct3D::Release();
 
