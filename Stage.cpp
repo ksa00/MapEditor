@@ -23,18 +23,16 @@ void Stage::Update()
 void Stage::Draw()
 {
 	Transform transform;
-	for (int i = 0; i < 20; i++)
+	for (int x = 0; x < 20; x++)
 	{
-		transform.position_.x = i;
-		pFbx->Draw(transform);
-	}transform.position_.x = 0;
-	for (int i = 0; i < 20; i++)
-	{
-		transform.position_.y = i;
-		pFbx->Draw(transform);
+		for (int z = 0; z < 20; z++) {
+			transform.position_.x = x;
+			transform.position_.z = z;
+			pFbx->Draw(transform);
+		}
+
 	}
-		
-	}
+}
 	
 
 void Stage::Release()
