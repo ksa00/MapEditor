@@ -8,10 +8,12 @@
 #include"Fbx.h"
 #include"Stage.h"
 #include"Input.h"
+#include"Controller.h"
 
 //リンカ
 #pragma comment(lib, "d3d11.lib")
 Stage* pStage;
+Controller* control;
 //定数宣言
 const char* WIN_CLASS_NAME = "SampleGame";  //ウィンドウクラス名
 const LPCSTR APP_NAME = "サンプルゲーム";  //ウィンドウクラス名
@@ -67,7 +69,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
  //DirectInputの初期化
  Input::Initialize(hWnd);
 
-
+ control = new Controller;
+ control->Initialize();
  //Direct3D初期化
  HRESULT hr= Direct3D::Initialize(winW, winH, hWnd);
  if (FAILED(hr))
@@ -108,6 +111,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
          //ゲームの処理
          //入力の処理
          Input::Update();
+         control->Update();
          Direct3D::BeginDraw();
          pStage->Draw();
         
@@ -127,9 +131,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
  }
  //解放処理
  pStage->Release();
+ 
  SAFE_DELETE(pStage);
  Input::Release();
-
+SAFE_DELETE(control);
  Direct3D::Release();
 
  
@@ -138,12 +143,17 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 //ウィンドウプロシージャ（何かあった時によばれる関数）
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-    switch (msg)
-    {
-    case WM_DESTROY:
-        PostQuitMessage(0);  //プログラム終了
-        return 0;
-    }
+  
+	switch (msg)
+	{
+	case WM_MOUSEMOVE:
+		Input::SetMousePosition(LOWORD(lParam), HIWORD(lParam));
+		return 0;
+	case WM_DESTROY:
+		PostQuitMessage(0);  //プログラム終了
+		return 0;
+	
+	}
     return DefWindowProc(hWnd, msg, wParam, lParam);
 }
 
