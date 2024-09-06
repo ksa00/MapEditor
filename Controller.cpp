@@ -21,7 +21,7 @@ void Controller::Update()
 {
 
  
-    XMVECTOR front = XMVectorSet(0, 0, 0.1f, 0);                
+  //  XMVECTOR front = XMVectorSet(0, 0, 0.1f, 0);                
     if (Input::IsKey(DIK_W))
     {
        
@@ -33,7 +33,7 @@ void Controller::Update()
     }
 
 
-    XMVECTOR right = XMVectorSet(0.1f, 0, 0, 0);              
+   // XMVECTOR right = XMVectorSet(0.1f, 0, 0, 0);              
 
     if (Input::IsKey(DIK_D))
     {
