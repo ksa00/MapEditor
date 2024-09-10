@@ -39,14 +39,14 @@ BOOL CALLBACK DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp);
     wc.hIcon = LoadIcon(NULL, IDI_APPLICATION); //アイコン
     wc.hIconSm = LoadIcon(NULL, IDI_WINLOGO);   //小さいアイコン
     wc.hCursor = LoadCursor(NULL, IDC_ARROW);   //マウスカーソル
-    wc.lpszMenuName = NULL;                     //メニュー（なし）
+    wc.lpszMenuName = MAKEINTRESOURCE(IDR_MENU1);                  //メニュー（なし）
     wc.cbClsExtra = 0;
     wc.cbWndExtra = 0;
     wc.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH); //背景（白）
     RegisterClassEx(&wc);  //クラスを登録
     //ウィンドウサイズの計算
     RECT winRect = { 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT };
-    AdjustWindowRect(&winRect, WS_OVERLAPPEDWINDOW, FALSE);
+   AdjustWindowRect(&winRect, WS_OVERLAPPEDWINDOW, TRUE);
     int winW = winRect.right - winRect.left;     //ウィンドウ幅
     int winH = winRect.bottom - winRect.top;     //ウィンドウ高さ
 
@@ -67,7 +67,7 @@ BOOL CALLBACK DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp);
 
  //ウィンドウを表示
  ShowWindow(hWnd, nCmdShow);
-
+Camera::Initialize();
  //DirectInputの初期化
  Input::Initialize(hWnd);
 
@@ -82,7 +82,7 @@ BOOL CALLBACK DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp);
  }
 
 
- Camera::Initialize();
+ 
  pStage = new Stage;
  pStage->Initialize();
  Fbx* fbx = new Fbx;
@@ -109,10 +109,11 @@ BOOL CALLBACK DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp);
 
          //カメラを更新
          Camera::Update();
+         Input::Update();
          pStage->Update();
          //ゲームの処理
          //入力の処理
-         Input::Update();
+     
          control->Update();
          Direct3D::BeginDraw();
          pStage->Draw();
