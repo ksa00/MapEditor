@@ -1,8 +1,19 @@
 #include "Stage.h"
 #include "resource.h"
+#include"Input.h"
+#include"Direct3D.h"
+
 Stage::Stage()
 {
 	pFbx = nullptr;
+	for (int x = 0; x < 20; x++) {
+		for (int z = 0; z < 20; z++) {
+			table_[x][z] = 1;
+		}
+	}
+	table_[3][5] = 0;
+	table_[2][6] = 5;
+	table_[2][8] = 4;
 }
 
 Stage::~Stage()
@@ -18,19 +29,54 @@ void Stage::Initialize()
 
 void Stage::Update()
 {
+	if (!Input::IsMouseButtonDown(0))
+	{
+
+		float w = (float)(Direct3D::scrWidth / 2.0f);
+		float h = (float)(Direct3D::scrHeight / 2.0f);
+		//Offsetx,y は0
+		//minZ =0 maxZ = 1
+
+		XMMATRIX vp =
+		{
+			 w,  0,  0, 0,
+			 0, -h,  0, 0,
+			 0,  0,  1, 0,
+			 w,  h,  0, 1
+		};
+		//ビューポート
+		XMMATRIX invVP = XMMatrixInverse(nullptr, vp);
+		//プロジェクション変換
+		XMMATRIX invProj = XMMatrixInverse(nullptr, Camera::GetProjectionMatrix());
+		//ビュー変換
+		XMMATRIX invView = XMMatrixInverse(nullptr, Camera::GetViewMatrix());
+		XMFLOAT3 mousePosFront = Input::GetMousePosition();
+		mousePosFront.z = 0.0f;
+		XMFLOAT3 mousePosBack = Input::GetMousePosition();
+		mousePosBack.z = 1.0f;
+		//①　mousePosFrontをベクトルに変換
+		XMVECTOR vMouseFront = XMLoadFloat3(&mousePosFront);
+		//②　①にinvVP、invPrj、invViewをかける
+		vMouseFront = XMVector3TransformCoord(vMouseFront, invVP * invProj * invView);
+		//③　mousePosBackをベクトルに変換
+		XMVECTOR vMouseBack = XMLoadFloat3(&mousePosBack);
+		//④　③にinvVP、invPrj、invViewをかける
+		vMouseBack = XMVector3TransformCoord(vMouseBack, invVP * invProj * invView);
+	}
 }
 
 void Stage::Draw()
 {
 	Transform transform;
-	for (int x = 0; x < 20; x++)
-	{
+	for (int x = 0; x < 20; x++) {
 		for (int z = 0; z < 20; z++) {
-			transform.position_.x = x;
-			transform.position_.z = z;
-			pFbx->Draw(transform);
+			for (int y = 0; y < table_[x][z]; y++) { // 高さ3段のループを追加
+				transform.position_.x = x;
+				transform.position_.y = y; // 高さに基づいてY座標を設定
+				transform.position_.z = z;
+				pFbx->Draw(transform);
+			}
 		}
-
 	}
 }
 	

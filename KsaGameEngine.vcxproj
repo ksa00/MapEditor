@@ -152,7 +152,7 @@
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Controller.cpp" />
     <ClCompile Include="Dice.cpp" />
-    <ClCompile Include="DIirect3D.cpp" />
+    <ClCompile Include="Direct3D.cpp" />
     <ClCompile Include="Fbx.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="Main.cpp">
