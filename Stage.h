@@ -2,10 +2,15 @@
 #include"Fbx.h"
 class Stage
 {
-	Fbx* pFbx;
+	Fbx* pFbx[5];
 	int mode_;      //0:上げる　1：下げる　2：種類を変える
 	int select_;    //種類
-	int table_[20][20];
+	struct 
+	{
+		int type;
+		int height;
+	}table_[20][20];
+	 
 public:
 	Stage();
 	~Stage();

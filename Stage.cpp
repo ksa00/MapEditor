@@ -1,11 +1,13 @@
-#include "Stage.h"
+#include "Stage.h"5
 #include "resource.h"
 #include"Input.h"
 #include"Direct3D.h"
 
 Stage::Stage()
 {
-	pFbx = nullptr;
+	for (int i = 0; i < 5; i++) {
+		pFbx [i] = nullptr;
+	}
 	for (int x = 0; x < 20; x++) {
 		for (int z = 0; z < 20; z++) {
 			table_[x][z] = 1;
@@ -23,8 +25,22 @@ Stage::~Stage()
 
 void Stage::Initialize()
 {
-	pFbx = new Fbx;
-	pFbx->Load("Asset/BoxDefault.fbx");
+	string modelname[] = {
+		"BoxDefault.fbx",
+		"BoxBrick.fbx",
+		"BoxGrass.fbx",
+		"BoxSand.fbx",
+		"BoxWater.fbx"
+	};
+	string fname_base = "Asset/";
+	for (int i = 0; i < 5; i++) {
+		pFbx[i] = new Fbx;
+		pFbx[i] ->Load(fname_base + modelname[i]);
+		
+	}
+
+	
+	
 }
 
 void Stage::Update()
@@ -74,7 +90,7 @@ void Stage::Draw()
 				transform.position_.x = x;
 				transform.position_.y = y; // ‚‚³‚ÉŠî‚Ã‚¢‚ÄYÀ•W‚ðÝ’è
 				transform.position_.z = z;
-				pFbx->Draw(transform);
+				pFbx[2]->Draw(transform);
 			}
 		}
 	}
@@ -83,8 +99,10 @@ void Stage::Draw()
 
 void Stage::Release()
 {
-	pFbx->Release();
-	SAFE_DELETE(pFbx);
+	for (int i = 0; i < 5; i++) {
+		pFbx[i]->Release();
+		SAFE_DELETE(pFbx[i]);
+	}
 }
 
 BOOL Stage::DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
