@@ -60,9 +60,7 @@ HRESULT Fbx::Load(std::string fileName)
 //頂点バッファ準備
 void Fbx::InitVertex(fbxsdk::FbxMesh* mesh)
 {
-
-	//頂点情報を入れる配列
-	std::vector<VERTEX>vertices(vertexCount_);
+	pVertices_ = new VERTEX[vertexCount_];
 
 	//全ポリゴン
 	for (DWORD poly = 0; poly < polygonCount_; poly++)
@@ -75,18 +73,18 @@ void Fbx::InitVertex(fbxsdk::FbxMesh* mesh)
 
 			//頂点の位置
 			FbxVector4 pos = mesh->GetControlPointAt(index);
-			vertices[index].position = XMVectorSet((float)pos[0], (float)pos[1], (float)pos[2], 0.0f);
+			pVertices_[index].position = XMVectorSet((float)pos[0], (float)pos[1], (float)pos[2], 0.0f);
 
 			//頂点のUV
 			FbxLayerElementUV* pUV = mesh->GetLayer(0)->GetUVs();
 			int uvIndex = mesh->GetTextureUVIndex(poly, vertex, FbxLayerElement::eTextureDiffuse);
 			FbxVector2  uv = pUV->GetDirectArray().GetAt(uvIndex);
-			vertices[index].uv = XMVectorSet((float)uv.mData[0], (float)(1.0f - uv.mData[1]), 0.0f, 0.0f);
+			pVertices_[index].uv = XMVectorSet((float)uv.mData[0], (float)(1.0f - uv.mData[1]), 0.0f, 0.0f);
 
 			//頂点の法線
 			FbxVector4 Normal;
 			mesh->GetPolygonVertexNormal(poly, vertex, Normal);	//ｉ番目のポリゴンの、ｊ番目の頂点の法線をゲット
-			vertices[index].normal = XMVectorSet((float)Normal[0], (float)Normal[1], (float)Normal[2], 0.0f);
+			pVertices_[index].normal = XMVectorSet((float)Normal[0], (float)Normal[1], (float)Normal[2], 0.0f);
 		}
 	}
 	// 頂点バッファ作成
@@ -99,7 +97,7 @@ void Fbx::InitVertex(fbxsdk::FbxMesh* mesh)
 	bd_vertex.MiscFlags = 0;
 	bd_vertex.StructureByteStride = 0;
 	D3D11_SUBRESOURCE_DATA data_vertex;
-	data_vertex.pSysMem = vertices.data();
+	data_vertex.pSysMem = pVertices_;
 	hr = Direct3D::pDevice->CreateBuffer(&bd_vertex, &data_vertex, &pVertexBuffer_);
 	if (FAILED(hr))
 	{
@@ -283,4 +281,28 @@ void Fbx::Release()
 	SAFE_DELETE(pIndexBuffer_);
 	SAFE_RELEASE(pVertexBuffer_);
 
+}
+
+void Fbx::RayCast(RayCastData& rayData)
+{XMVECTOR start = XMLoadFloat4(&rayData.start);
+			XMVECTOR dir = XMLoadFloat4(&rayData.dir);
+			XMVECTOR dirN = XMVector4Normalize(dir);
+	for (int material = 0; material < materialCount_; material++)
+	{
+		//あるマテリアルmaterialのindex数を３で割るとポリゴン数になるねぇ
+		for (int poly = 0; poly < indexCount_[material] / 3; poly++)
+		{
+			XMVECTOR v0 = pVertices_[ppIndex_[material][poly * 3 + 0]].position;
+			XMVECTOR v1 = pVertices_[ppIndex_[material][poly * 3 + 1]].position;
+			XMVECTOR v2 = pVertices_[ppIndex_[material][poly * 3 + 2]].position;
+			
+
+			rayData.hit = TriangleTests::Intersects(start, dirN, v0, v1, v2, rayData.dist);
+
+			if (rayData.hit)
+			{
+				return;
+			}
+		}
+	}
 }

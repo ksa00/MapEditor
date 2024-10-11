@@ -8,11 +8,20 @@
 #include <DirectXCollision.h>
 #include "Transform.h"
 
+
 #pragma comment(lib, "LibFbxSDK-MD.lib")
 #pragma comment(lib, "LibXml2-MD.lib")
 #pragma comment(lib, "zlib-MD.lib")
 
 using std::vector;
+struct RayCastData
+{
+	XMFLOAT4 start;
+	XMFLOAT4 dir;
+	bool hit;
+	float dist;
+};
+
 class Fbx
 {
 	//ƒ}ƒeƒŠƒAƒ‹
@@ -46,6 +55,8 @@ class Fbx
 	MATERIAL* pMaterialList_;
 	int** ppIndex_;
 	vector <int> indexCount_;
+
+	VERTEX* pVertices_;
 	
 public:
 
@@ -57,4 +68,5 @@ public:
 	void InitMaterial(fbxsdk::FbxNode* pNode);
     void    Draw(Transform& transform);
 	void    Release();
+	void RayCast(RayCastData& rayData);
 };

@@ -10,12 +10,12 @@ Stage::Stage()
 	}
 	for (int x = 0; x < 20; x++) {
 		for (int z = 0; z < 20; z++) {
-			table_[x][z] = 1;
+			table_[x][z].height = 1;
 		}
 	}
-	table_[3][5] = 0;
-	table_[2][6] = 5;
-	table_[2][8] = 4;
+	table_[3][5].height = 0;
+	table_[2][6].height = 5;
+	table_[2][8].height = 4;
 }
 
 Stage::~Stage()
@@ -45,6 +45,12 @@ void Stage::Initialize()
 
 void Stage::Update()
 {
+	RayCastData data;
+	data.start = XMFLOAT4(0, 5, 0,0);
+	data.dir = XMFLOAT4(0, -1, 0,0);
+	pFbx[0]->RayCast(data);
+
+
 	if (!Input::IsMouseButtonDown(0))
 	{
 
@@ -86,11 +92,11 @@ void Stage::Draw()
 	Transform transform;
 	for (int x = 0; x < 20; x++) {
 		for (int z = 0; z < 20; z++) {
-			for (int y = 0; y < table_[x][z]; y++) { // 高さ3段のループを追加
+			for (int y = 0; y < table_[x][z].height; y++) { // 高さ3段のループを追加
 				transform.position_.x = x;
 				transform.position_.y = y; // 高さに基づいてY座標を設定
 				transform.position_.z = z;
-				pFbx[2]->Draw(transform);
+				pFbx[0]->Draw(transform);
 			}
 		}
 	}
