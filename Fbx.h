@@ -16,8 +16,8 @@
 using std::vector;
 struct RayCastData
 {
-	XMFLOAT4 start;
-	XMFLOAT4 dir;
+	XMFLOAT3 start;
+	XMFLOAT3 dir;
 	bool hit;
 	float dist;
 };
@@ -68,5 +68,5 @@ public:
 	void InitMaterial(fbxsdk::FbxNode* pNode);
     void    Draw(Transform& transform);
 	void    Release();
-	void RayCast(RayCastData& rayData);
+	void RayCast(RayCastData& rayData,Transform& transform);
 };

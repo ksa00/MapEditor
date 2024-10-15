@@ -45,11 +45,6 @@ void Stage::Initialize()
 
 void Stage::Update()
 {
-	RayCastData data;
-	data.start = XMFLOAT4(0, 5, 0,0);
-	data.dir = XMFLOAT4(0, -1, 0,0);
-	pFbx[0]->RayCast(data);
-
 
 	if (!Input::IsMouseButtonDown(0))
 	{
@@ -84,6 +79,18 @@ void Stage::Update()
 		XMVECTOR vMouseBack = XMLoadFloat3(&mousePosBack);
 		//‡C@‡B‚ÉinvVPAinvPrjAinvView‚ğ‚©‚¯‚é
 		vMouseBack = XMVector3TransformCoord(vMouseBack, invVP * invProj * invView);
+
+
+		RayCastData data;
+		XMStoreFloat3(&data.start, vMouseFront);
+		XMStoreFloat3(&data.dir,vMouseBack- vMouseFront);
+
+		Transform trans;
+		pFbx[0]->RayCast(data, trans);
+		if (data.hit == true) {
+			PostQuitMessage(0);
+		}
+
 	}
 }
 

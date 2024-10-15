@@ -283,10 +283,19 @@ void Fbx::Release()
 
 }
 
-void Fbx::RayCast(RayCastData& rayData)
-{XMVECTOR start = XMLoadFloat4(&rayData.start);
-			XMVECTOR dir = XMLoadFloat4(&rayData.dir);
+void Fbx::RayCast(RayCastData& rayData,Transform& transform)
+{
+	transform.Calculation();
+	XMMATRIX invWorld = XMMatrixInverse(nullptr, transform.GetWorldMatrix());
+
+	XMVECTOR start = XMLoadFloat3(&rayData.start);
+			XMVECTOR dir = XMLoadFloat3(&rayData.dir);
 			XMVECTOR dirN = XMVector4Normalize(dir);
+
+			XMVECTOR end = start + dir;
+			start = XMVector3TransformCoord(start, invWorld);
+			end = XMVector3TransformCoord(end, invWorld);
+			dir = end - start;
 	for (int material = 0; material < materialCount_; material++)
 	{
 		//‚ ‚éƒ}ƒeƒŠƒAƒ‹material‚Ìindex”‚ð‚R‚ÅŠ„‚é‚Æƒ|ƒŠƒSƒ“”‚É‚È‚é‚Ë‚¥
@@ -296,7 +305,9 @@ void Fbx::RayCast(RayCastData& rayData)
 			XMVECTOR v1 = pVertices_[ppIndex_[material][poly * 3 + 1]].position;
 			XMVECTOR v2 = pVertices_[ppIndex_[material][poly * 3 + 2]].position;
 			
-
+			/*v0 = XMVector2TransformCoord(v0, transform.GetWorldMatrix());
+			v1 = XMVector2TransformCoord(v1, transform.GetWorldMatrix());
+			v2 = XMVector2TransformCoord(v2, transform.GetWorldMatrix());*/
 			rayData.hit = TriangleTests::Intersects(start, dirN, v0, v1, v2, rayData.dist);
 
 			if (rayData.hit)
