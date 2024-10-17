@@ -3,19 +3,23 @@
 #include"Input.h"
 #include"Direct3D.h"
 
-Stage::Stage()
+Stage::Stage() : pFbx(), Width(20), Height(20)
 {
-	for (int i = 0; i < 5; i++) {
-		pFbx [i] = nullptr;
-	}
-	for (int x = 0; x < 20; x++) {
-		for (int z = 0; z < 20; z++) {
+	for (int x = 0; x < Width; x++)
+	{
+		for (int z = 0; z < Height; z++)
+		{
 			table_[x][z].height = 1;
+			table_[x][z].type = 0;
 		}
 	}
-	table_[3][5].height = 0;
-	table_[2][6].height = 5;
-	table_[2][8].height = 4;
+	table_[0][0].height = 5;
+	table_[3][3].height = 2;
+	table_[10][1].height = 3;
+
+	table_[0][0].type = 1;
+	table_[3][3].type = 2;
+	table_[10][1].type = 3;
 }
 
 Stage::~Stage()
@@ -46,7 +50,7 @@ void Stage::Initialize()
 void Stage::Update()
 {
 
-	if (!Input::IsMouseButtonDown(0))
+	if (Input::IsMouseButtonDown(0))
 	{
 
 		float w = (float)(Direct3D::scrWidth / 2.0f);
@@ -83,12 +87,26 @@ void Stage::Update()
 
 		RayCastData data;
 		XMStoreFloat3(&data.start, vMouseFront);
-		XMStoreFloat3(&data.dir,vMouseBack- vMouseFront);
+		XMStoreFloat3(&data.dir, vMouseBack - vMouseFront);
+		for (int x = 0; x < Width; x++)
+		{
+			for (int z = 0; z < Height; z++)
+			{
+				for (int y = 0; y < table_[x][z].height; y++)
+				{
+					Transform trans;
+					trans.position_.x = x;
+					trans.position_.y = y;
+					trans.position_.z = z;
 
-		Transform trans;
-		pFbx[0]->RayCast(data, trans);
-		if (data.hit == true) {
-			PostQuitMessage(0);
+					int type = table_[x][z].type;
+					pFbx[type]->RayCast(data, trans);
+					if (data.hit == true) {
+						table_[x][z].height++;
+						return;
+					}
+				}
+			}
 		}
 
 	}
@@ -96,14 +114,21 @@ void Stage::Update()
 
 void Stage::Draw()
 {
-	Transform transform;
-	for (int x = 0; x < 20; x++) {
-		for (int z = 0; z < 20; z++) {
-			for (int y = 0; y < table_[x][z].height; y++) { // 高さ3段のループを追加
-				transform.position_.x = x;
-				transform.position_.y = y; // 高さに基づいてY座標を設定
-				transform.position_.z = z;
-				pFbx[0]->Draw(transform);
+	
+	for (int x = 0; x < Width; x++)
+	{
+		for (int z = 0; z < Height; z++)
+		{
+			for (int y = 0; y < table_[x][z].height; y++)
+			{
+				Transform trans;
+				trans.position_.x = x;
+				trans.position_.y = y;
+				trans.position_.z = z;
+
+				int type = table_[x][z].type;
+				pFbx[type]->Draw(trans);
+
 			}
 		}
 	}

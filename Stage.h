@@ -3,6 +3,8 @@
 class Stage
 {
 	Fbx* pFbx[5];
+	int Width;
+	int Height;
 	int mode_;      //0:上げる　1：下げる　2：種類を変える
 	int select_;    //種類
 	struct 
