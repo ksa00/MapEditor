@@ -288,9 +288,9 @@ void Fbx::RayCast(RayCastData& rayData,Transform& transform)
 	transform.Calculation();
 	XMMATRIX invWorld = XMMatrixInverse(nullptr, transform.GetWorldMatrix());
 
-	XMVECTOR start = XMLoadFloat3(&rayData.start);
+	        XMVECTOR start = XMLoadFloat3(&rayData.start);
 			XMVECTOR dir = XMLoadFloat3(&rayData.dir);
-			XMVECTOR dirN = XMVector4Normalize(dir);
+			 dir = XMVector3Normalize(dir);
 
 			XMVECTOR end = start + dir;
 			start = XMVector3TransformCoord(start, invWorld);
@@ -308,7 +308,7 @@ void Fbx::RayCast(RayCastData& rayData,Transform& transform)
 			/*v0 = XMVector2TransformCoord(v0, transform.GetWorldMatrix());
 			v1 = XMVector2TransformCoord(v1, transform.GetWorldMatrix());
 			v2 = XMVector2TransformCoord(v2, transform.GetWorldMatrix());*/
-			rayData.hit = TriangleTests::Intersects(start, dirN, v0, v1, v2, rayData.dist);
+			rayData.hit = TriangleTests::Intersects(start, dir, v0, v1, v2, rayData.dist);
 
 			if (rayData.hit)
 			{

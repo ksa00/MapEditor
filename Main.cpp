@@ -74,7 +74,7 @@ Camera::Initialize();
  control = new Controller;
  control->Initialize();
  //Direct3D‰Šú‰»
- HRESULT hr= Direct3D::Initialize(winW, winH, hWnd);
+ HRESULT hr= Direct3D::Initialize(WINDOW_WIDTH, WINDOW_HEIGHT, hWnd);
  if (FAILED(hr))
  {
      MessageBox(NULL, "DirectX‚Ì‰Šú‰»‚É¸”s", NULL, MB_OK);

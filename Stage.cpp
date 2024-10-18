@@ -3,19 +3,25 @@
 #include"Input.h"
 #include"Direct3D.h"
 
-Stage::Stage(): mode_(0), select_(0)
+void Stage::SetBlock(int _x, int _z, BLOCKTYPE _type)
 {
-	for (int i = 0; i < 5; i++) {
-		pFbx [i] = nullptr;
+	table_[_x][_z].type = _type;
+}
+
+void Stage::SetBlockHeight(int _x, int _z, int _height)
+{
+	table_[_x][_z].height = _height;
+}
+Stage::Stage() : pFbx(), mode_(0), select_(0)
+{
+	for (int i = 0; i < FBX_NUM; i++) {
+		pFbx[i] =new Fbx ;
 	}
-	for (int x = 0; x < 20; x++) {
-		for (int z = 0; z < 20; z++) {
-			table_[x][z].height = 1;
+	for (int z = 0; z < Height; z++) {
+		for (int x = 0; x < Width; x++) {
+			SetBlock(x, z, DEFAULT);
 		}
 	}
-	table_[3][5].height = 0;
-	table_[2][6].height = 5;
-	table_[2][8].height = 4;
 }
 
 Stage::~Stage()
@@ -33,22 +39,26 @@ void Stage::Initialize()
 		"BoxWater.fbx"
 	};
 	string fname_base = "Asset/";
-	for (int i = 0; i < 5; i++) {
-		pFbx[i] = new Fbx;
+	for (int i = 0; i < FBX_NUM; i++) {
 		pFbx[i] ->Load(fname_base + modelname[i]);
 		
 	}
-
-	
+	for (int z = 0; z < Height; z++) {
+		for (int x = 0; x < Width; x++) {
+			SetBlock(x, z, (BLOCKTYPE)(0));
+			SetBlockHeight(x, z,1);
+		}
+	}
 	
 }
 
 void Stage::Update()
 {
 
-	if (Input::IsMouseButtonDown(0))
+	if (!Input::IsMouseButtonDown(0))
 	{
-
+		return;
+	}
 		float w = (float)(Direct3D::scrWidth / 2.0f);
 		float h = (float)(Direct3D::scrHeight / 2.0f);
 		//Offsetx,y は0
@@ -80,30 +90,75 @@ void Stage::Update()
 		//④　③にinvVP、invPrj、invViewをかける
 		vMouseBack = XMVector3TransformCoord(vMouseBack, invVP * invProj * invView);
 
+		int bufX = -1, bufZ; // bufX starts as -1 to indicate no block has been found
+		float minDistance = 9999999; // To track the closest block hit
+		
+		for (int x = 0; x < Width; x++)
+		{
+			for (int z = 0; z < Height; z++)
+			{
+				for (int y = 0; y < table_[x][z].height; y++)
+				{
+					RayCastData data;
+					XMStoreFloat3(&data.start, vMouseFront);
+					XMStoreFloat3(&data.dir, vMouseBack - vMouseFront);
+					Transform trans;
+					trans.position_.x = x;
+					trans.position_.y = y;
+					trans.position_.z = z;
 
-		RayCastData data;
-		XMStoreFloat3(&data.start, vMouseFront);
-		XMStoreFloat3(&data.dir,vMouseBack- vMouseFront);
-
-		Transform trans;
-		pFbx[0]->RayCast(data, trans);
-		if (data.hit == true) {
-			PostQuitMessage(0);
+					pFbx[0]->RayCast(data, trans);
+					if (data.hit == true) {
+						if (minDistance > data.dist)
+						{
+							minDistance = data.dist;
+							bufX = x;// Store the X coordinate of the closest block
+							bufZ = z;// Store the Z coordinate of the closest block
+						}
+					}
+				}
+			}
+		}
+		if (bufX >= 0)
+		{
+			switch (mode_)
+			{
+			case 0:
+				table_[bufX][bufZ].height++;
+				break;
+			case 1:
+				if (table_[bufX][bufZ].height > 1)
+				{
+					table_[bufX][bufZ].height--;
+				}
+				break;
+			case 2:
+				table_[bufX][bufZ].type = select_;
+				break;
+			}
 		}
 
-	}
+	
+
 }
 
 void Stage::Draw()
 {
-	Transform transform;
-	for (int x = 0; x < 20; x++) {
-		for (int z = 0; z < 20; z++) {
-			for (int y = 0; y < table_[x][z].height; y++) { // 高さ3段のループを追加
-				transform.position_.x = x;
-				transform.position_.y = y; // 高さに基づいてY座標を設定
-				transform.position_.z = z;
-				pFbx[0]->Draw(transform);
+	
+	for (int x = 0; x < Width; x++)
+	{
+		for (int z = 0; z < Height; z++)
+		{
+			for (int y = 0; y < table_[x][z].height; y++)
+			{
+				Transform trans;
+				trans.position_.x = x;
+				trans.position_.y = y;
+				trans.position_.z = z;
+
+				int type = table_[x][z].type;
+				pFbx[type]->Draw(trans);
+
 			}
 		}
 	}
@@ -118,15 +173,6 @@ void Stage::Release()
 	}
 }
 
-void Stage::SetBlock(int _x, int _z, BLOCKTYPE _type)
-{
-	table_[_x][_z].type = _type;
-}
-
-void Stage::SetBlockHeight(int _x, int _z, int _height)
-{
-	table_[_x][_z].height = _height;
-}
 
 BOOL Stage::DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
 {
