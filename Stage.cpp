@@ -1,9 +1,9 @@
-#include "Stage.h"5
+#include "Stage.h"
 #include "resource.h"
 #include"Input.h"
 #include"Direct3D.h"
 
-Stage::Stage()
+Stage::Stage(): mode_(0), select_(0)
 {
 	for (int i = 0; i < 5; i++) {
 		pFbx [i] = nullptr;
@@ -46,7 +46,7 @@ void Stage::Initialize()
 void Stage::Update()
 {
 
-	if (!Input::IsMouseButtonDown(0))
+	if (Input::IsMouseButtonDown(0))
 	{
 
 		float w = (float)(Direct3D::scrWidth / 2.0f);
@@ -116,6 +116,16 @@ void Stage::Release()
 		pFbx[i]->Release();
 		SAFE_DELETE(pFbx[i]);
 	}
+}
+
+void Stage::SetBlock(int _x, int _z, BLOCKTYPE _type)
+{
+	table_[_x][_z].type = _type;
+}
+
+void Stage::SetBlockHeight(int _x, int _z, int _height)
+{
+	table_[_x][_z].height = _height;
 }
 
 BOOL Stage::DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)

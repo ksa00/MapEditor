@@ -1,5 +1,14 @@
 #pragma once
 #include"Fbx.h"
+namespace {
+	const int MODEL_NUM{ 5 };
+	const int XSIZE{ 15 };
+	const int ZSIZE{ 15 };
+	enum BLOCKTYPE
+	{
+		DEFAULT, BRICK, GRASS, SAND, WATER
+	};
+}
 class Stage
 {
 	Fbx* pFbx[5];
@@ -12,12 +21,15 @@ class Stage
 	}table_[20][20];
 	 
 public:
+
 	Stage();
 	~Stage();
 	void Initialize();
 	void Update();
 	void Draw();
 	void Release();
+	void SetBlock(int _x, int _z, BLOCKTYPE _type);
+	void SetBlockHeight(int _x, int _z, int _height);
 	BOOL DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp);
 };
 
