@@ -1,4 +1,4 @@
-#include "Stage.h"
+﻿#include "Stage.h"
 #include "resource.h"
 #include"Input.h"
 #include"Direct3D.h"
@@ -61,7 +61,7 @@ void Stage::Update()
 	}
 		float w = (float)(Direct3D::scrWidth / 2.0f);
 		float h = (float)(Direct3D::scrHeight / 2.0f);
-		//Offsetx,y ��0
+		//Offsetx,y ‚Í0
 		//minZ =0 maxZ = 1
 
 		XMMATRIX vp =
@@ -71,23 +71,23 @@ void Stage::Update()
 			 0,  0,  1, 0,
 			 w,  h,  0, 1
 		};
-		//�r���[�|�[�g
+		//ƒrƒ…[ƒ|[ƒg
 		XMMATRIX invVP = XMMatrixInverse(nullptr, vp);
-		//�v���W�F�N�V�����ϊ�
+		//ƒvƒƒWƒFƒNƒVƒ‡ƒ“•ÏŠ·
 		XMMATRIX invProj = XMMatrixInverse(nullptr, Camera::GetProjectionMatrix());
-		//�r���[�ϊ�
+		//ƒrƒ…[•ÏŠ·
 		XMMATRIX invView = XMMatrixInverse(nullptr, Camera::GetViewMatrix());
 		XMFLOAT3 mousePosFront = Input::GetMousePosition();
 		mousePosFront.z = 0.0f;
 		XMFLOAT3 mousePosBack = Input::GetMousePosition();
 		mousePosBack.z = 1.0f;
-		//�@�@mousePosFront���x�N�g���ɕϊ�
+		//‡@@mousePosFront‚ðƒxƒNƒgƒ‹‚É•ÏŠ·
 		XMVECTOR vMouseFront = XMLoadFloat3(&mousePosFront);
-		//�A�@�@��invVP�AinvPrj�AinvView��������
+		//‡A@‡@‚ÉinvVPAinvPrjAinvView‚ð‚©‚¯‚é
 		vMouseFront = XMVector3TransformCoord(vMouseFront, invVP * invProj * invView);
-		//�B�@mousePosBack���x�N�g���ɕϊ�
+		//‡B@mousePosBack‚ðƒxƒNƒgƒ‹‚É•ÏŠ·
 		XMVECTOR vMouseBack = XMLoadFloat3(&mousePosBack);
-		//�C�@�B��invVP�AinvPrj�AinvView��������
+		//‡C@‡B‚ÉinvVPAinvPrjAinvView‚ð‚©‚¯‚é
 		vMouseBack = XMVector3TransformCoord(vMouseBack, invVP * invProj * invView);
 
 		int bufX = -1, bufZ; // bufX starts as -1 to indicate no block has been found
@@ -180,11 +180,11 @@ BOOL Stage::DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
 	{
 	case WM_INITDIALOG:
 		SendMessage(GetDlgItem(hDlg, IDC_RADIO_UP), BM_SETCHECK, BST_CHECKED, 0);
-		SendMessage(GetDlgItem(hDlg, IDC_COMBO2), CB_ADDSTRING, 0, (LPARAM)"�f�t�H���g");
-		SendMessage(GetDlgItem(hDlg, IDC_COMBO2), CB_ADDSTRING, 0, (LPARAM)"�����K");
-		SendMessage(GetDlgItem(hDlg, IDC_COMBO2), CB_ADDSTRING, 0, (LPARAM)"����");
-		SendMessage(GetDlgItem(hDlg, IDC_COMBO2), CB_ADDSTRING, 0, (LPARAM)"���n");
-		SendMessage(GetDlgItem(hDlg, IDC_COMBO2), CB_ADDSTRING, 0, (LPARAM)"��");
+		SendMessage(GetDlgItem(hDlg, IDC_COMBO2), CB_ADDSTRING, 0, (LPARAM)"ƒfƒtƒHƒ‹ƒg");
+		SendMessage(GetDlgItem(hDlg, IDC_COMBO2), CB_ADDSTRING, 0, (LPARAM)"ƒŒƒ“ƒK");
+		SendMessage(GetDlgItem(hDlg, IDC_COMBO2), CB_ADDSTRING, 0, (LPARAM)"‘Œ´");
+		SendMessage(GetDlgItem(hDlg, IDC_COMBO2), CB_ADDSTRING, 0, (LPARAM)"»’n");
+		SendMessage(GetDlgItem(hDlg, IDC_COMBO2), CB_ADDSTRING, 0, (LPARAM)"…");
 		SendMessage(GetDlgItem(hDlg, IDC_COMBO2), CB_SETCURSEL, 0, 0);
 		return TRUE;
 
@@ -211,4 +211,117 @@ BOOL Stage::DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
 
 	}
 	return FALSE;
+}
+
+void Stage::Save()
+{
+	char fileName[MAX_PATH] = "UNTITLED.map";  //ファイル名を入れる変数
+
+	//「ファイルを保存」ダイアログの設定
+	OPENFILENAME ofn;                         	//名前をつけて保存ダイアログの設定用構造体
+	ZeroMemory(&ofn, sizeof(ofn));            	//構造体初期化
+	ofn.lStructSize = sizeof(OPENFILENAME);   	//構造体のサイズ
+	ofn.lpstrFilter = TEXT("MapEditor(*.map)\0*.map\0")        //─┬ファイルの種類
+		TEXT("TEXT DATA(*.txt*)\0*.txt*\0\0");   
+	TEXT("ALL FILES(*.*)\0*.*\0\0");   //─┘
+	ofn.lpstrFile = fileName;               	//ファイル名
+	ofn.nMaxFile = MAX_PATH;               	//パスの最大文字数
+	ofn.Flags = OFN_OVERWRITEPROMPT;   		//フラグ（同名ファイルが存在したら上書き確認）
+	ofn.lpstrDefExt = "map";                  	//デフォルト拡張子
+
+	//「ファイルを保存」ダイアログ
+	BOOL selFile;
+	selFile = GetSaveFileName(&ofn);
+
+	//キャンセルしたら中断
+	if (selFile == FALSE) return;
+
+
+
+	HANDLE hFile;
+	hFile = CreateFile(
+		fileName,    //ファイル名
+		GENERIC_WRITE,  //アクセスモード
+		0,
+		NULL,
+		CREATE_ALWAYS,     //作成方法
+		FILE_ATTRIBUTE_NORMAL,
+		NULL
+	);
+
+	std::string data = "";
+
+
+
+	//data.length()
+
+
+	DWORD bytes = 0;
+	WriteFile(
+		hFile,              //ファイルハンドル
+		"ABCDEF",          //保存したい文字列
+		12,                  //保存する文字数
+		&bytes,             //保存したサイズ
+		NULL
+	);
+
+
+
+	CloseHandle(hFile);
+
+}
+
+void Stage::Open()
+{
+	char fileName[MAX_PATH] = "UNTITLED.map";  //ファイル名を入れる変数
+
+	//「ファイルを保存」ダイアログの設定
+	OPENFILENAME ofn;                         	//名前をつけて保存ダイアログの設定用構造体
+	ZeroMemory(&ofn, sizeof(ofn));            	//構造体初期化
+	ofn.lStructSize = sizeof(OPENFILENAME);   	//構造体のサイズ
+	ofn.lpstrFilter = TEXT("MapEditor(*.map)\0*.map\0")        //─┬ファイルの種類
+		TEXT("TEXT DATA(*.txt*)\0*.txt*\0\0");
+	TEXT("ALL FILES(*.*)\0*.*\0\0");   //─┘
+	ofn.lpstrFile = fileName;               	//ファイル名
+	ofn.nMaxFile = MAX_PATH;               	//パスの最大文字数
+	ofn.Flags = OFN_FILEMUSTEXIST;   		//フラグ（同名ファイルが存在したら上書き確認）
+	ofn.lpstrDefExt = "map";                  	//デフォルト拡張子
+
+	//「ファイルを保存」ダイアログ
+	BOOL selFile;
+	selFile = GetOpenFileName(&ofn);
+
+	//キャンセルしたら中断
+	if (selFile == FALSE) return;
+
+
+
+	HANDLE hFile;
+	hFile = CreateFile(
+		fileName,    //ファイル名
+		GENERIC_READ,  //アクセスモード
+		0,
+		NULL,
+		OPEN_EXISTING,     //作成方法
+		FILE_ATTRIBUTE_NORMAL,
+		NULL
+	);
+	//ファイルのサイズを取得
+	DWORD fileSize = GetFileSize(hFile, NULL);
+
+	//ファイルのサイズ分メモリを確保
+	char* data;
+	data = new char[fileSize];
+
+	DWORD dwBytes = 0; //読み込み位置
+
+	ReadFile(
+		hFile,     //ファイルハンドル
+		data,      //データを入れる変数
+		fileSize,  //読み込むサイズ
+		&dwBytes,  //読み込んだサイズ
+		NULL);     //オーバーラップド構造体（今回は使わない）
+	
+	CloseHandle(hFile);
+
 }

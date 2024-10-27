@@ -31,5 +31,8 @@ void SetBlock(int _x, int _z, BLOCKTYPE _type);
 	void Release();
 	
 	BOOL DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp);
+		void Save();
+		void Open();
+
 };
 

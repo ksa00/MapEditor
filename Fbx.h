@@ -7,6 +7,7 @@
 #include "Texture.h"
 #include <DirectXCollision.h>
 #include "Transform.h"
+#include<vector>
 
 
 #pragma comment(lib, "LibFbxSDK-MD.lib")

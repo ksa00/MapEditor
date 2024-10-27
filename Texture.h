@@ -3,7 +3,7 @@
 #include <string>
 // DirectXTex‚Ìƒ‰ƒCƒuƒ‰ƒŠ‚ğƒŠƒ“ƒN
 
-#include <DirectXTex.h>
+#include<DirectXTex.h>
 
 #include <wrl.h>
 using namespace Microsoft::WRL;
