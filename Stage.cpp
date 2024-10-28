@@ -249,9 +249,7 @@ void Stage::Save()
 		NULL
 	);
 
-	std::string data = "";
-
-	data.length();
+	
 	// Write fixed dimensions (Width and Height)
 	int fixedWidth = 20;
 	int fixedHeight = 20;
@@ -263,11 +261,11 @@ void Stage::Save()
 	//	&bytes,             //保存したサイズ
 	//	NULL
 	//);
-//幅と高さウィ書き込む
+
+	//幅と高さの書き込み
 	WriteFile(hFile, &fixedWidth, sizeof(int), &bytes, NULL);
 	WriteFile(hFile, &fixedHeight, sizeof(int), &bytes, NULL);
-
-	// Write map data
+	
 	for (int x = 0; x < Width; x++) {
 		for (int z = 0; z < Height; z++) {
 			WriteFile(hFile, &table_[x][z], sizeof(table_[x][z]), &bytes, NULL);
