@@ -35,4 +35,3 @@ void SetBlock(int _x, int _z, BLOCKTYPE _type);
 		void Open();
 
 };
-

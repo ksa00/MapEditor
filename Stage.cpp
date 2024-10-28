@@ -180,11 +180,11 @@ BOOL Stage::DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
 	{
 	case WM_INITDIALOG:
 		SendMessage(GetDlgItem(hDlg, IDC_RADIO_UP), BM_SETCHECK, BST_CHECKED, 0);
-		SendMessage(GetDlgItem(hDlg, IDC_COMBO2), CB_ADDSTRING, 0, (LPARAM)"ƒfƒtƒHƒ‹ƒg");
-		SendMessage(GetDlgItem(hDlg, IDC_COMBO2), CB_ADDSTRING, 0, (LPARAM)"ƒŒƒ“ƒK");
-		SendMessage(GetDlgItem(hDlg, IDC_COMBO2), CB_ADDSTRING, 0, (LPARAM)"‘Œ´");
-		SendMessage(GetDlgItem(hDlg, IDC_COMBO2), CB_ADDSTRING, 0, (LPARAM)"»’n");
-		SendMessage(GetDlgItem(hDlg, IDC_COMBO2), CB_ADDSTRING, 0, (LPARAM)"…");
+		SendMessage(GetDlgItem(hDlg, IDC_COMBO2), CB_ADDSTRING, 0, (LPARAM)"デフォルト");
+		SendMessage(GetDlgItem(hDlg, IDC_COMBO2), CB_ADDSTRING, 0, (LPARAM)"レンガ");
+		SendMessage(GetDlgItem(hDlg, IDC_COMBO2), CB_ADDSTRING, 0, (LPARAM)"草原");
+		SendMessage(GetDlgItem(hDlg, IDC_COMBO2), CB_ADDSTRING, 0, (LPARAM)"砂地");
+		SendMessage(GetDlgItem(hDlg, IDC_COMBO2), CB_ADDSTRING, 0, (LPARAM)"水");
 		SendMessage(GetDlgItem(hDlg, IDC_COMBO2), CB_SETCURSEL, 0, 0);
 		return TRUE;
 
@@ -251,21 +251,28 @@ void Stage::Save()
 
 	std::string data = "";
 
-
-
-	//data.length()
-
-
+	data.length();
+	// Write fixed dimensions (Width and Height)
+	int fixedWidth = 20;
+	int fixedHeight = 20;
 	DWORD bytes = 0;
-	WriteFile(
-		hFile,              //ファイルハンドル
-		"ABCDEF",          //保存したい文字列
-		12,                  //保存する文字数
-		&bytes,             //保存したサイズ
-		NULL
-	);
+	//WriteFile(
+	//	hFile,              //ファイルハンドル
+	//	"ABCDEF",          //保存したい文字列
+	//	12,                  //保存する文字数
+	//	&bytes,             //保存したサイズ
+	//	NULL
+	//);
+//幅と高さウィ書き込む
+	WriteFile(hFile, &fixedWidth, sizeof(int), &bytes, NULL);
+	WriteFile(hFile, &fixedHeight, sizeof(int), &bytes, NULL);
 
-
+	// Write map data
+	for (int x = 0; x < Width; x++) {
+		for (int z = 0; z < Height; z++) {
+			WriteFile(hFile, &table_[x][z], sizeof(table_[x][z]), &bytes, NULL);
+		}
+	}
 
 	CloseHandle(hFile);
 
@@ -313,15 +320,26 @@ void Stage::Open()
 	char* data;
 	data = new char[fileSize];
 
-	DWORD dwBytes = 0; //読み込み位置
+	// Temporary variables for dimensions
+	int fileWidth;
+	int fileHeight;
 
-	ReadFile(
-		hFile,     //ファイルハンドル
-		data,      //データを入れる変数
-		fileSize,  //読み込むサイズ
-		&dwBytes,  //読み込んだサイズ
-		NULL);     //オーバーラップド構造体（今回は使わない）
-	
+	DWORD bytes = 0; //読み込み位置
+	//幅と高さ読み込み
+	ReadFile(hFile, &fileWidth, sizeof(int), &bytes, NULL);
+	ReadFile(hFile, &fileHeight, sizeof(int), &bytes, NULL);
+	//ReadFile(
+	//	hFile,     //ファイルハンドル
+	//	data,      //データを入れる変数
+	//	fileSize,  //読み込むサイズ
+	//	&dwBytes,  //読み込んだサイズ
+	//	NULL);     //オーバーラップド構造体（今回は使わない）
+	 // Read the block data
+	for (int x = 0; x < Width; x++) {
+		for (int z = 0; z < Height; z++) {
+			ReadFile(hFile, &table_[x][z], sizeof(table_[0][0]), &bytes,NULL);
+		}
+	}
 	CloseHandle(hFile);
 
 }
