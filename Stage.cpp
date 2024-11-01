@@ -297,7 +297,7 @@ void Stage::Save()
 	// やり方2
 	DWORD bytesWritten;
 	// Write dimensions first
-	std::string header = "Width,Height\n";
+	std::string header = "Type,Height\n";
 	WriteFile(hFile, header.c_str(), header.size(), &bytesWritten, NULL);
 
 	for (int x = 0; x < Width; x++) {
