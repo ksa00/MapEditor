@@ -73,19 +73,19 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <IncludePath>D:\K_sa\libraries\2020.3.7\include;D:\COLLEGE\2020.3.7\include;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\K_sa\libraries\2020.3.7\lib\x64\debug;D:\COLLEGE\2020.3.7\lib\x64\debug;$(LibraryPath)</LibraryPath>
+    <LibraryPath>D:\K_sa\libraries\2020.3.7\lib\x64\debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IncludePath>D:\K_sa\libraries\2020.3.7\include;D:\COLLEGE\2020.3.7\include;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\K_sa\libraries\2020.3.7\lib\x64\release;D:\COLLEGE\2020.3.7\lib\x64\release;$(LibraryPath)</LibraryPath>
+    <LibraryPath>D:\K_sa\libraries\2020.3.7\lib\x64\debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>D:\K_sa\libraries\2020.3.7\include;D:\COLLEGE\2020.3.7\include;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\K_sa\libraries\2020.3.7\lib\x64\debug;D:\COLLEGE\2020.3.7\lib\x64\debug;$(LibraryPath)</LibraryPath>
+    <LibraryPath>D:\K_sa\libraries\2020.3.7\lib\x64\debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>D:\K_sa\libraries\2020.3.7\include;D:\COLLEGE\2020.3.7\include;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\K_sa\libraries\2020.3.7\lib\x64\release;D:\COLLEGE\2020.3.7\lib\x64\release;$(LibraryPath)</LibraryPath>
+    <LibraryPath>D:\K_sa\libraries\2020.3.7\lib\x64\debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

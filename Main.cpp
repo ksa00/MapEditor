@@ -146,21 +146,27 @@ SAFE_DELETE(control);
 //ウィンドウプロシージャ（何かあった時によばれる関数）
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-    int a = 0;
+    
 	switch (msg)
 	{
 	case WM_MOUSEMOVE:
 		Input::SetMousePosition(LOWORD(lParam), HIWORD(lParam));
 		return 0;
 	case WM_DESTROY:
+        if (pStage->HasUnsavedChanges()) { // Assume you create this method
+            if (MessageBox(hWnd, TEXT("You have unsaved changes. Do you want to save them?"), TEXT("Unsaved Changes"), MB_YESNO | MB_ICONQUESTION) == IDYES) {
+                pStage->Save(); // Save the current file
+            }
+        }
 		PostQuitMessage(0);  //プログラム終了
 		return 0;
     case WM_COMMAND:
         switch (LOWORD(wParam))
         {
         case ID_MENU_NEW:
-            a++;
-            break;
+       
+            pStage->NewFile();
+            return 0;
         case ID_MENU_OPEN:
             pStage -> Open();
             return 0;

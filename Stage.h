@@ -19,8 +19,9 @@ class Stage
 		int type;
 		int height;
 	}table_[Width][Height];
-	 
+	bool unsavedChanges; // Track unsaved changes
 public:
+
 void SetBlock(int _x, int _z, BLOCKTYPE _type);
 	void SetBlockHeight(int _x, int _z, int _height);
 	Stage();
@@ -31,7 +32,9 @@ void SetBlock(int _x, int _z, BLOCKTYPE _type);
 	void Release();
 	
 	BOOL DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp);
+	void NewFile();
 		void Save();
 		void Open();
+		bool HasUnsavedChanges() const {return unsavedChanges;}
 
 };
